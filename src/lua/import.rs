@@ -34,6 +34,7 @@ pub(super) struct LuaShared {
 	pub lua_pcall: Symbol<'static, unsafe extern "C-unwind" fn(state: LuaState, nargs: LuaInt, nresults: LuaInt, errfunc: LuaInt) -> LuaInt>,
 	pub lua_pushvalue: Symbol<'static, unsafe extern "C-unwind" fn(state: LuaState, index: LuaInt)>,
 	pub lua_rawgeti: Symbol<'static, unsafe extern "C-unwind" fn(state: LuaState, t: LuaInt, index: LuaInt)>,
+	pub lual_loadstring: Symbol<'static, unsafe extern "C-unwind" fn(state: LuaState, path: LuaString) -> LuaInt>,
 }
 unsafe impl Sync for LuaShared {}
 impl LuaShared {
@@ -64,6 +65,7 @@ impl LuaShared {
 				lua_pcall: find_symbol!("lua_pcall"),
 				lua_pushvalue: find_symbol!("lua_pushvalue"),
 				lua_rawgeti: find_symbol!("lua_rawgeti"),
+				lual_loadstring: find_symbol!("luaL_loadstring"),
 			}
 		}
 	}

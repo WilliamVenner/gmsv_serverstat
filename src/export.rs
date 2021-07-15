@@ -122,4 +122,5 @@ sysinfo!(
 	(all, All);
 	(all_system, AllSystem);
 	(all_process, AllProcess);
+	(realtime, RealtimeData);
 );

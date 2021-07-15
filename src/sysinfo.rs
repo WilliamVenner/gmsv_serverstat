@@ -153,6 +153,10 @@ pub fn physical_cpus() -> u16 {
 	*PHYSICAL_CPUS
 }
 
+pub fn all() -> (AllSystem, AllProcess) {
+	(all_system(), all_process())
+}
+
 #[derive(Copy, Clone, Debug)]
 pub struct AllSystem {
 	pub cpu_usage: f64,
@@ -161,14 +165,6 @@ pub struct AllSystem {
 	pub available_memory: f64,
 	pub logical_cpus: u16,
 	pub physical_cpus: u16,
-}
-#[derive(Copy, Clone, Debug)]
-pub struct AllProcess {
-	pub cpu_usage: f64,
-	pub memory_usage: f64,
-}
-pub fn all() -> (AllSystem, AllProcess) {
-	(all_system(), all_process())
 }
 pub fn all_system() -> AllSystem {
 	AllSystem {
@@ -180,9 +176,33 @@ pub fn all_system() -> AllSystem {
 		physical_cpus: physical_cpus(),
 	}
 }
+
+#[derive(Copy, Clone, Debug)]
+pub struct AllProcess {
+	pub cpu_usage: f64,
+	pub memory_usage: f64,
+}
 pub fn all_process() -> AllProcess {
 	AllProcess {
 		cpu_usage: process_cpu_usage(),
 		memory_usage: process_memory_usage(),
+	}
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct RealtimeData {
+	pub system_cpu_usage: f64,
+	pub system_memory_usage: f64,
+	pub system_available_memory: f64,
+	pub process_cpu_usage: f64,
+	pub process_memory_usage: f64,
+}
+pub fn realtime() -> RealtimeData {
+	RealtimeData {
+		system_cpu_usage: system_cpu_usage(),
+		system_memory_usage: system_memory_usage(),
+		system_available_memory: system_available_memory(),
+		process_cpu_usage: process_cpu_usage(),
+		process_memory_usage: process_memory_usage(),
 	}
 }

@@ -1,4 +1,4 @@
-use std::{cell::RefCell, sync::{Arc, Barrier, atomic::AtomicUsize}};
+use std::{cell::RefCell, sync::atomic::AtomicUsize};
 
 use crossbeam::channel::{Receiver, Sender};
 

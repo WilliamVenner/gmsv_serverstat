@@ -108,6 +108,15 @@ impl LuaState {
 	pub unsafe fn raw_geti(&self, t: LuaInt, index: LuaInt) {
 		(LUA_SHARED.lua_rawgeti)(*self, t, index)
 	}
+
+	pub unsafe fn load_string(&self, src: LuaString) -> Result<(), LuaInt> {
+		let lua_error_code = (LUA_SHARED.lual_loadstring)(*self, src);
+		if lua_error_code == 0 {
+			Ok(())
+		} else {
+			Err(lua_error_code)
+		}
+	}
 }
 impl std::ops::Deref for LuaState {
 	type Target = *const std::ffi::c_void;
