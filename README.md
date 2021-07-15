@@ -2,7 +2,7 @@
 
 Simple serverside binary module which can expose information about system resource usage to Lua.
 
-## Installation
+# Installation
 
 Download the relevant module for your server's operating system and platform/Gmod branch from the [releases section](https://github.com/WilliamVenner/gmsv_serverstat/releases).
 
@@ -14,9 +14,15 @@ If you're not sure on what operating system/platform your server is running, run
 lua_run print((system.IsWindows()and"Windows"or system.IsLinux()and"Linux"or"Unsupported").." "..(jit.arch=="x64"and"x86-64"or"x86"))
 ```
 
-## Usage
+# Usage
 
-### Blocking Functions
+To load the module, simply [`require`](https://wiki.facepunch.com/gmod/Global.require) it:
+
+```lua
+require("serverstat")
+```
+
+## Blocking Functions
 
 Some of these functions may block the main thread whilst acquiring information about the system & process. Make sure to call these functions sparingly.
 
@@ -25,8 +31,6 @@ Some functions will only block when they are called for the first time.
 Some functions may also return default values (such as 0) when called for the first time.
 
 ```lua
-if not serverstat then require("serverstat") end
-
 -- Gets SRCDS' CPU usage
 -- [float] 0..1
 serverstat.ProcessCPUUsage()
@@ -76,7 +80,7 @@ serverstat.AllSystem()
 serverstat.AllProcess()
 ```
 
-### Asynchronous Functions
+## Asynchronous Functions
 
 Each blocking function has an asynchronous equivalent in the `serverstat.async` table which takes a single `function` callback argument.
 
@@ -84,7 +88,21 @@ Using the asynchronous functions will acquire the requested information on a sep
 
 The thread goes to sleep when unused and uses no system resources until needed again.
 
-### Realtime Functions
+```lua
+serverstat.async.ProcessCPUUsage(function(data) ... end)
+serverstat.async.ProcessMemoryUsage(function(data) ... end)
+serverstat.async.SystemCPUUsage(function(data) ... end)
+serverstat.async.SystemMemoryUsage(function(data) ... end)
+serverstat.async.SystemTotalMemory(function(data) ... end)
+serverstat.async.SystemAvailableMemory(function(data) ... end)
+serverstat.async.PhysicalCPUs(function(data) ... end)
+serverstat.async.LogicalCPUs(function(data) ... end)
+serverstat.async.All(function(data) ... end)
+serverstat.async.AllSystem(function(data) ... end)
+serverstat.async.AllProcess(function(data) ... end)
+```
+
+## Realtime Functions
 
 Additionally, serverstat provides a "realtime" data API.
 
