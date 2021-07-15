@@ -1,0 +1,17 @@
+[package]
+name = "gmsv_serverstat"
+version = "0.1.0"
+authors = ["William Venner <william@venner.io>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+libloading = "0.7"
+lazy_static = "1.4"
+sysinfo = "0.19"
+
+[profile.release]
+lto = 'thin'
+codegen-units = 1
