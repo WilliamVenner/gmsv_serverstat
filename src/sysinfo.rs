@@ -8,7 +8,7 @@ use crate::lua;
 const CPU_REFRESH_INTERVAL: Duration = Duration::from_millis(200);
 
 lazy_static! {
-	static ref PID: usize = sysinfo::get_current_pid().expect("Failed to get process ID");
+	static ref PID: usize = sysinfo::get_current_pid().expect("Failed to get process ID") as usize;
 }
 
 thread_local! {
@@ -46,8 +46,8 @@ macro_rules! system {
 
 macro_rules! process {
 	($sys:ident) => {{
-		$sys.refresh_process(*PID);
-		$sys.process(*PID).expect("Failed to get process information")
+		$sys.refresh_process(*PID as _);
+		$sys.process(*PID as _).expect("Failed to get process information")
 	}};
 }
 
