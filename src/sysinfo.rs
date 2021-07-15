@@ -109,7 +109,7 @@ pub unsafe extern "C-unwind" fn system_available_memory(lua: lua::State) -> i32 
 
 pub unsafe extern "C-unwind" fn process_cpu_usage(lua: lua::State) -> i32 {
 	fn update_cpu_usage(cpu_usage: &mut f64, process: &Process) {
-		*cpu_usage = (process.cpu_usage() / (*LOGICAL_CPUS as f32)) as f64;
+		*cpu_usage = (process.cpu_usage() as f64) / (*LOGICAL_CPUS as f64);
 	}
 
 	thread_local! {

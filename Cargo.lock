@@ -22,7 +22,7 @@ checksum = "fea41bba32d969b513997752735605054bc0dfa92b4c56bf1189f2e174be7a10"
 
 [[package]]
 name = "gmsv_serverstat"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "lazy_static",
  "libloading",
