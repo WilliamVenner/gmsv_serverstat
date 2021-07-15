@@ -21,7 +21,7 @@ macro_rules! system {
 			$code
 		})
 	};
-	
+
 	(mut $sys:ident, $code:expr) => {
 		SYSTEM.with(|sys| {
 			let mut $sys = sys.borrow_mut();
@@ -35,7 +35,7 @@ macro_rules! system {
 			$code
 		})
 	};
-	
+
 	($sys:ident, $code:expr) => {
 		SYSTEM.with(|sys| {
 			let $sys = sys.borrow_mut();
@@ -136,7 +136,7 @@ pub unsafe extern "C-unwind" fn process_cpu_usage(lua: lua::State) -> i32 {
 		}
 		*cpu_usage
 	}));
-	
+
 	1
 }
 
@@ -144,7 +144,7 @@ pub unsafe extern "C-unwind" fn process_memory_usage(lua: lua::State) -> i32 {
 	system!(mut sys, {
 		sys.refresh_memory();
 		let process = process!(sys);
-		lua.push_number((process.memory() + process.virtual_memory()) as f64 / 1024.);
+		lua.push_number(process.memory() as f64 / 1024.);
 	});
 	1
 }
