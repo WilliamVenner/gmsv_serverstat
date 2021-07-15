@@ -54,18 +54,7 @@ impl LuaShared {
 
 	#[cfg(target_os = "windows")]
 	unsafe fn find_library() -> Library {
-		let result = Library::new("lua_shared.dll");
-
-		#[cfg(all(target_os = "linux", target_pointer_width = "64"))]
-		let result = Library::new("lua_shared.so");
-
-		#[cfg(all(target_os = "linux", target_pointer_width = "32"))]
-		let result = Library::new("garrysmod/bin/lua_shared_srv.so");
-
-		match result {
-			Ok(library) => library,
-			Err(_) => panic!("Failed to load lua_shared")
-		}
+		Library::new("lua_shared.dll").expect("Failed to load lua_shared")
 	}
 
 	#[cfg(target_os = "linux")]
