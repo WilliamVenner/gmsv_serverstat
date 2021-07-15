@@ -36,8 +36,22 @@ impl LuaState {
 	}
 
 	#[inline]
+	pub unsafe fn push_string(&self, data: &str) {
+		(LUA_SHARED.lua_pushlstring)(*self, data.as_ptr() as LuaString, data.len())
+	}
+
+	#[inline]
+	pub unsafe fn get_field(&self, index: LuaInt, k: LuaString) {
+		(LUA_SHARED.lua_getfield)(*self, index, k)
+	}
+
+	#[inline]
 	pub unsafe fn set_field(&self, index: i32, k: LuaString) {
 		(LUA_SHARED.lua_setfield)(*self, index, k)
+	}
+
+	pub unsafe fn get_global(&self, name: LuaString) {
+		(LUA_SHARED.lua_getfield)(*self, LUA_GLOBALSINDEX, name)
 	}
 
 	#[inline]
@@ -53,6 +67,46 @@ impl LuaState {
 	#[inline]
 	pub unsafe fn new_table(&self) {
 		(LUA_SHARED.lua_createtable)(*self, 0, 0)
+	}
+
+	#[inline]
+	pub unsafe fn reference(&self) -> LuaInt {
+		(LUA_SHARED.lual_ref)(*self, LUA_REGISTRYINDEX)
+	}
+
+	#[inline]
+	pub unsafe fn dereference(&self, r#ref: LuaReference) {
+		(LUA_SHARED.lual_unref)(*self, LUA_REGISTRYINDEX, r#ref)
+	}
+
+	#[inline]
+	pub unsafe fn check_type(&self, index: LuaInt, r#type: LuaInt) {
+		(LUA_SHARED.lual_checktype)(*self, index, r#type)
+	}
+
+	#[inline]
+	pub unsafe fn check_function(&self, index: LuaInt) {
+		self.check_type(index, LUA_TFUNCTION)
+	}
+
+	#[inline]
+	pub unsafe fn pcall(&self, nargs: LuaInt, nresults: LuaInt, errfunc: LuaInt) -> LuaInt {
+		(LUA_SHARED.lua_pcall)(*self, nargs, nresults, errfunc)
+	}
+
+	#[inline]
+	pub unsafe fn call(&self, nargs: LuaInt, nresults: LuaInt) {
+		(LUA_SHARED.lua_call)(*self, nargs, nresults)
+	}
+
+	#[inline]
+	pub unsafe fn push_value(&self, index: LuaInt) {
+		(LUA_SHARED.lua_pushvalue)(*self, index)
+	}
+
+	#[inline]
+	pub unsafe fn raw_geti(&self, t: LuaInt, index: LuaInt) {
+		(LUA_SHARED.lua_rawgeti)(*self, t, index)
 	}
 }
 impl std::ops::Deref for LuaState {

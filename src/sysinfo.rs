@@ -3,8 +3,6 @@ use std::time::{Duration, Instant};
 
 use ::sysinfo::*;
 
-use crate::lua;
-
 const CPU_REFRESH_INTERVAL: Duration = Duration::from_millis(200);
 
 lazy_static! {
@@ -52,10 +50,10 @@ macro_rules! process {
 }
 
 lazy_static! {
-	static ref LOGICAL_CPUS: i32 = system!(sys, sys.processors().len()) as i32;
+	static ref LOGICAL_CPUS: u16 = system!(sys, sys.processors().len()) as u16;
 }
 
-pub unsafe extern "C-unwind" fn system_cpu_usage(lua: lua::State) -> i32 {
+pub fn system_cpu_usage() -> f64 {
 	fn update_cpu_usage(cpu_usage: &mut f64, sys: &mut System) {
 		sys.refresh_cpu();
 		*cpu_usage = sys.global_processor_info().cpu_usage() as f64;
@@ -69,45 +67,40 @@ pub unsafe extern "C-unwind" fn system_cpu_usage(lua: lua::State) -> i32 {
 		}, Instant::now()));
 	}
 
-	lua.push_number(TOTAL_CPU_USAGE.with(|cell| {
+	TOTAL_CPU_USAGE.with(|cell| {
 		let (ref mut cpu_usage, ref mut timestamp) = *cell.borrow_mut();
 		if timestamp.elapsed() > CPU_REFRESH_INTERVAL {
 			system!(mut sys, update_cpu_usage(cpu_usage, &mut *sys));
 		}
 		*cpu_usage
-	}));
-
-	1
+	})
 }
 
-pub unsafe extern "C-unwind" fn system_memory_usage(lua: lua::State) -> i32 {
+pub fn system_memory_usage() -> f64 {
 	system!(mut sys, {
 		sys.refresh_memory();
-		lua.push_number(sys.used_memory() as f64 / 1024.);
-	});
-	1
+		sys.used_memory() as f64 / 1024.
+	})
 }
 
-pub unsafe extern "C-unwind" fn system_total_memory(lua: lua::State) -> i32 {
+pub fn system_total_memory() -> f64 {
 	lazy_static! {
 		static ref TOTAL_MEMORY: f64 = system!(mut sys, {
 			sys.refresh_memory();
 			sys.total_memory() as f64 / 1024.
 		}) as f64;
 	}
-	lua.push_number(*TOTAL_MEMORY);
-	1
+	*TOTAL_MEMORY
 }
 
-pub unsafe extern "C-unwind" fn system_available_memory(lua: lua::State) -> i32 {
+pub fn system_available_memory() -> f64 {
 	system!(mut sys, {
 		sys.refresh_memory();
-		lua.push_number(sys.available_memory() as f64 / 1024.);
-	});
-	1
+		sys.available_memory() as f64 / 1024.
+	})
 }
 
-pub unsafe extern "C-unwind" fn process_cpu_usage(lua: lua::State) -> i32 {
+pub fn process_cpu_usage() -> f64 {
 	fn update_cpu_usage(cpu_usage: &mut f64, process: &Process) {
 		*cpu_usage = (process.cpu_usage() as f64) / (*LOGICAL_CPUS as f64);
 	}
@@ -126,7 +119,7 @@ pub unsafe extern "C-unwind" fn process_cpu_usage(lua: lua::State) -> i32 {
 		}, Instant::now()));
 	}
 
-	lua.push_number(PROCESS_CPU_USAGE.with(|cell| {
+	PROCESS_CPU_USAGE.with(|cell| {
 		let (ref mut cpu_usage, ref mut timestamp) = *cell.borrow_mut();
 		if timestamp.elapsed() > CPU_REFRESH_INTERVAL {
 			system!(mut sys, {
@@ -135,32 +128,61 @@ pub unsafe extern "C-unwind" fn process_cpu_usage(lua: lua::State) -> i32 {
 			});
 		}
 		*cpu_usage
-	}));
-
-	1
+	})
 }
 
-pub unsafe extern "C-unwind" fn process_memory_usage(lua: lua::State) -> i32 {
+pub fn process_memory_usage() -> f64 {
 	system!(mut sys, {
 		sys.refresh_memory();
 		let process = process!(sys);
-		lua.push_number(process.memory() as f64 / 1024.);
-	});
-	1
+		process.memory() as f64 / 1024.
+	})
 }
 
-pub unsafe extern "C-unwind" fn logical_cpus(lua: lua::State) -> i32 {
-	lua.push_integer(*LOGICAL_CPUS);
-	1
+pub fn logical_cpus() -> u16 {
+	*LOGICAL_CPUS
 }
 
-pub unsafe extern "C-unwind" fn physical_cpus(lua: lua::State) -> i32 {
+pub fn physical_cpus() -> u16 {
 	lazy_static! {
-		static ref PHYSICAL_CPUS: i32 = system!(mut sys, {
+		static ref PHYSICAL_CPUS: u16 = system!(mut sys, {
 			sys.refresh_cpu();
 			sys.physical_core_count().unwrap_or(0)
-		}) as i32;
+		}) as u16;
 	}
-	lua.push_integer(*PHYSICAL_CPUS);
-	1
+	*PHYSICAL_CPUS
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct AllSystem {
+	pub cpu_usage: f64,
+	pub memory_usage: f64,
+	pub total_memory: f64,
+	pub available_memory: f64,
+	pub logical_cpus: u16,
+	pub physical_cpus: u16,
+}
+#[derive(Copy, Clone, Debug)]
+pub struct AllProcess {
+	pub cpu_usage: f64,
+	pub memory_usage: f64,
+}
+pub fn all() -> (AllSystem, AllProcess) {
+	(all_system(), all_process())
+}
+pub fn all_system() -> AllSystem {
+	AllSystem {
+		cpu_usage: system_cpu_usage(),
+		memory_usage: system_memory_usage(),
+		total_memory: system_total_memory(),
+		available_memory: system_available_memory(),
+		logical_cpus: logical_cpus(),
+		physical_cpus: physical_cpus(),
+	}
+}
+pub fn all_process() -> AllProcess {
+	AllProcess {
+		cpu_usage: process_cpu_usage(),
+		memory_usage: process_memory_usage(),
+	}
 }
