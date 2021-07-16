@@ -43,7 +43,7 @@ function serverstat.realtime.AllProcessCopy()
 end
 
 function serverstat.realtime.Stop()
-	timer_Remove("gmsv_serverstat_realtime")
+	timer.Remove("gmsv_serverstat_realtime")
 end
 
 local pending = false
