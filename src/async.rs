@@ -95,7 +95,7 @@ impl AsyncController {
 
 				responses += 1;
 			}
-			if RESPONSE_QUEUE_SIZE.fetch_sub(responses, std::sync::atomic::Ordering::SeqCst) == 0 {
+			if RESPONSE_QUEUE_SIZE.fetch_sub(responses, std::sync::atomic::Ordering::SeqCst) - responses == 0 {
 				controller.async_finally(lua);
 			}
 		});
