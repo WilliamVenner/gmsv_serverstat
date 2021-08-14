@@ -1,6 +1,6 @@
 [package]
 name = "gmsv_serverstat"
-version = "0.2.2"
+version = "0.2.3"
 authors = ["William Venner <william@venner.io>"]
 edition = "2018"
 
@@ -14,5 +14,5 @@ codegen-units = 1
 [dependencies]
 libloading = "0.7"
 lazy_static = "1.4"
-sysinfo = { version = "0.19", default-features = false }
+sysinfo = { version = "0.20", default-features = false }
 crossbeam = { version = "0.8", default-features = false, features = ["crossbeam-channel", "std"] }
