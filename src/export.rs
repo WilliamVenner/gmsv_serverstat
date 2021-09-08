@@ -1,4 +1,4 @@
-use crate::lua;
+use crate::lua::{self, LuaInt};
 use crate::sysinfo::*;
 
 pub trait SysInfoResponseData: Send {
@@ -17,7 +17,7 @@ impl SysInfoResponseData for f64 {
 impl SysInfoResponseData for u16 {
 	#[inline]
 	unsafe fn push_lua(&self, lua: lua::State) -> i32 {
-		lua.push_integer(*self as i32);
+		lua.push_integer(*self as LuaInt);
 		1
 	}
 }

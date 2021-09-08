@@ -41,7 +41,7 @@ impl LuaState {
 	}
 
 	#[inline]
-	pub unsafe fn get_field(&self, index: LuaInt, k: LuaString) {
+	pub unsafe fn get_field(&self, index: i32, k: LuaString) {
 		(LUA_SHARED.lua_getfield)(*self, index, k)
 	}
 
@@ -70,7 +70,7 @@ impl LuaState {
 	}
 
 	#[inline]
-	pub unsafe fn reference(&self) -> LuaInt {
+	pub unsafe fn reference(&self) -> i32 {
 		(LUA_SHARED.lual_ref)(*self, LUA_REGISTRYINDEX)
 	}
 
@@ -80,36 +80,36 @@ impl LuaState {
 	}
 
 	#[inline]
-	pub unsafe fn check_type(&self, index: LuaInt, r#type: LuaInt) {
+	pub unsafe fn check_type(&self, index: i32, r#type: i32) {
 		(LUA_SHARED.lual_checktype)(*self, index, r#type)
 	}
 
 	#[inline]
-	pub unsafe fn check_function(&self, index: LuaInt) {
+	pub unsafe fn check_function(&self, index: i32) {
 		self.check_type(index, LUA_TFUNCTION)
 	}
 
 	#[inline]
-	pub unsafe fn pcall(&self, nargs: LuaInt, nresults: LuaInt, errfunc: LuaInt) -> LuaInt {
+	pub unsafe fn pcall(&self, nargs: i32, nresults: i32, errfunc: i32) -> i32 {
 		(LUA_SHARED.lua_pcall)(*self, nargs, nresults, errfunc)
 	}
 
 	#[inline]
-	pub unsafe fn call(&self, nargs: LuaInt, nresults: LuaInt) {
+	pub unsafe fn call(&self, nargs: i32, nresults: i32) {
 		(LUA_SHARED.lua_call)(*self, nargs, nresults)
 	}
 
 	#[inline]
-	pub unsafe fn push_value(&self, index: LuaInt) {
+	pub unsafe fn push_value(&self, index: i32) {
 		(LUA_SHARED.lua_pushvalue)(*self, index)
 	}
 
 	#[inline]
-	pub unsafe fn raw_geti(&self, t: LuaInt, index: LuaInt) {
+	pub unsafe fn raw_geti(&self, t: i32, index: i32) {
 		(LUA_SHARED.lua_rawgeti)(*self, t, index)
 	}
 
-	pub unsafe fn load_string(&self, src: LuaString) -> Result<(), LuaInt> {
+	pub unsafe fn load_string(&self, src: LuaString) -> Result<(), i32> {
 		let lua_error_code = (LUA_SHARED.lual_loadstring)(*self, src);
 		if lua_error_code == 0 {
 			Ok(())

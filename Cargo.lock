@@ -90,7 +90,7 @@ dependencies = [
 
 [[package]]
 name = "gmsv_serverstat"
-version = "0.2.3"
+version = "0.2.4"
 dependencies = [
  "crossbeam",
  "lazy_static",
