@@ -1,6 +1,6 @@
 [package]
 name = "gmsv_serverstat"
-version = "0.2.4"
+version = "0.2.5"
 authors = ["William Venner <william@venner.io>"]
 edition = "2018"
 
